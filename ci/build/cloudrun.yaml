@@ -33,7 +33,7 @@ steps:
       - '--labels=service-name=$_LABEL_SERVICE_NAME,cost-team=$_LABEL_COST_TEAM,env=$_LABEL_ENV,cost-center=$_LABEL_COST_CENTER'
       - '--set-env-vars=MONGO_DB_NAME=$_MONGO_DB_NAME'
       - '--set-env-vars=MONGO_DB_URL=$_MONGO_DB_URL'
-
+      - '--set-env-vars=CRYPTOGRAPHY_DONT_BUILD_RUST=$_CRYPTOGRAPHY_DONT_BUILD_RUST'
 
 timeout: '3600s'
 options:
