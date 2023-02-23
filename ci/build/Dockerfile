@@ -1,5 +1,5 @@
 # Dockerfile
-FROM python:alpine3.7
+FROM python:alpine3.10
 COPY . /project
 WORKDIR /project
 RUN pip install -r requirements.txt
