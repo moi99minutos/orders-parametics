@@ -1,0 +1,46 @@
+steps:
+  - id: "Building container image"
+    name: "gcr.io/cloud-builders/docker"
+    args: [
+      "build",
+      "-t", "gcr.io/$PROJECT_ID/$_SERVICE_NAME:$COMMIT_SHA",
+      "-f", "ci/build/Dockerfile", "."
+    ]
+    secretEnv: [ 'ACCESS_TOKEN_USR', 'ACCESS_TOKEN_PWD' ]
+
+  - id: "Registering container..."
+    name: "gcr.io/cloud-builders/docker"
+    args: [ "push", "gcr.io/$PROJECT_ID/$_SERVICE_NAME:$COMMIT_SHA" ]
+
+  - id: "Deploy container image to Cloud Run"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      - 'beta' # required for --cpu-boost[preview feature]
+      - 'run'
+      - 'deploy'
+      - '$_SERVICE_NAME'
+      - '--image=gcr.io/$PROJECT_ID/$_SERVICE_NAME:$COMMIT_SHA'
+      - '--region=us-central1'
+      - '--platform=managed'
+      - '--cpu=1'
+      - '--cpu-boost' # [preview feature]
+      - '--memory=1Gi'
+      - '--timeout=180'
+      - '--min-instances=$_MIN_INSTANCES'
+      - '--service-account=$_SERVICE_ACCOUNT'
+      - '--allow-unauthenticated'
+      - '--labels=service-name=$_LABEL_SERVICE_NAME,cost-team=$_LABEL_COST_TEAM,env=$_LABEL_ENV,cost-center=$_LABEL_COST_CENTER'
+      - '--set-env-vars=MONGO_DB_NAME=$_MONGO_DB_NAME'
+      - '--set-env-vars=MONGO_DB_URL=$_MONGO_DB_URL'
+
+
+timeout: '3600s'
+options:
+  machineType: 'N1_HIGHCPU_8'
+availableSecrets:
+  secretManager:
+    - versionName: projects/$PROJECT_ID/secrets/access-token-user/versions/latest
+      env: 'ACCESS_TOKEN_USR'
+    - versionName: projects/$PROJECT_ID/secrets/access-token-password/versions/latest
+      env: 'ACCESS_TOKEN_PWD'

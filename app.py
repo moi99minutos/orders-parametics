@@ -11,8 +11,8 @@ from typing import Optional, List
 import motor.motor_asyncio
 
 app = FastAPI()
-client = motor.motor_asyncio.AsyncIOMotorClient(os.getenv('MONGO_URL'))
-db = client[os.getenv('MONGO_DB')]
+client = motor.motor_asyncio.AsyncIOMotorClient(os.getenv('MONGO_DB_URL'))
+db = client[os.getenv('MONGO_DB_NAME')]
 
 def json_serial(encoder, obj):
     """JSON serializer for objects not serializable by default json code"""
