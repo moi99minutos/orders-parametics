@@ -4,5 +4,5 @@ COPY . /project
 WORKDIR /project
 RUN pip install -r requirements.txt
 RUN pip install "uvicorn[standard]"
-CMD ["uvicorn"  , "app:app"]
 EXPOSE 8080
+CMD ["uvicorn"  , "app:app"]
